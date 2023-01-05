@@ -6,8 +6,18 @@ import { Verifier } from "./services/verifier";
 // FrameWork
 const directives = [PhoneNumberDirective, CreditCardDirective];
 
-const formatter = new Formatter;
-const verifier = new Verifier;
+const services: { name: string; instance: any }[] = [];
+
+const providers = [
+    {
+        provide: "formatter",
+        construct: () => new Formatter('global')
+    },
+    {
+        provide: "verifier",
+        construct: () => new Verifier()
+    },
+];
 
 directives.forEach(directive => {
     const elements = document.querySelectorAll<HTMLElement>(directive.selector);
@@ -28,18 +38,40 @@ function analyseDirectiveConstructor(directive, element: HTMLElement) {
 
     const paramsNames = extractParmasNamesFromDirective(directive)
 
-    const params = paramsNames.map(name => {
+    const params = paramsNames.map((name) => {
         if (name === "element") {
             return element;
         }
 
-        if (name === "formatter") {
-            return formatter;
+        const directiveProviders = directive.provider || [];
+
+        const directiveProvider = directiveProviders.find((p: { provide: string; }) => p.provide === name)
+
+        if (directiveProvider) {
+            const instance = directiveProvider.construct();
+            return instance;
         }
 
-        if (name === "verifier") {
-            return verifier;
+        const service = services.find((s) => s.name === name);
+
+        if (service) {
+            return service.instance;
         }
+
+        const provider = providers.find((p) => p.provide === name);
+
+        if (!provider) {
+            throw new Error("Aucun fournisseur pour le service " + name)
+        }
+
+        const instance = provider.construct();
+
+        services.push({
+            name: name,
+            instance: instance,
+        });
+
+        return instance;
     })
 
     return params;

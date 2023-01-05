@@ -2,6 +2,12 @@ import { Formatter } from "../services/formatter";
 
 export class PhoneNumberDirective {
     static selector = "[phone-number]";
+    static provider = [
+        {
+            provide: "formatter",
+            construct: () => new Formatter("spécifique"),
+        }
+    ];
 
     willHaveSpaces = true;
     borderColor = "red";
