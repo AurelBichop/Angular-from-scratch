@@ -3,6 +3,7 @@ import { PhoneNumberDirective } from "../directives/phone-number.directive";
 import { Detector } from "./change-detector";
 import { Module, ProvidersMetadata, ServicesInstances } from "./type";
 import set from "lodash/set";
+import { NgZone } from "./zone";
 
 export class FrameWork {
     /** 
@@ -17,39 +18,39 @@ export class FrameWork {
      * to the html elements
      */
     boostrapApplication(metadata: Module) {
+
         this.providers = metadata.providers || [];
         this.directives = metadata.declarations;
 
-        this.directives.forEach(directive => {
-            const elements = document.querySelectorAll<HTMLElement>(directive.selector);
+        NgZone.run(() => {
+            this.directives.forEach(directive => {
+                const elements = document.querySelectorAll<HTMLElement>(directive.selector);
 
-            elements.forEach(element => {
-                const params = this.analyseDirectiveConstructor(directive, element)
-                const directiveInstance: any = Reflect.construct(directive, params);
+                elements.forEach(element => {
+                    const params = this.analyseDirectiveConstructor(directive, element)
+                    const directiveInstance: any = Reflect.construct(directive, params);
 
-                const proxy = new Proxy(directiveInstance, {
-                    set(target, propName: string, value, proxy) {
-                        target[propName] = value;
+                    const proxy = new Proxy(directiveInstance, {
+                        set(target, propName: string, value, proxy) {
+                            target[propName] = value;
 
-                        if (!target.bindings) {
+                            if (!target.bindings) {
+                                return true;
+                            }
+
+                            const bindings = target.bindings.find(b => b.propName === propName);
+
+                            if (!bindings) {
+                                return true;
+                            }
+                            Detector.addBinding(element, bindings.attrName, value)
+
                             return true;
                         }
-
-                        const bindings = target.bindings.find(b => b.propName === propName);
-
-                        if (!bindings) {
-                            return true;
-                        }
-                        Detector.addBinding(element,bindings.attrName,value)
-/* 
-                        console.log("on met à jour " + propName.toString() + " avec la valeur " + value);
-
-                        set(target.element, bindings.attrName, value) */
-                        return true;
-                    }
-                })
-                proxy.init();
-            });
+                    })
+                    proxy.init();
+                });
+            })
         })
 
     }
