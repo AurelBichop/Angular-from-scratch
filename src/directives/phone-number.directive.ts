@@ -31,8 +31,6 @@ export class PhoneNumberDirective {
     @HostListener("click")
     onClick() {
         this.placeholderText = "Hello Aurel";
-
-        Detector.digest();
     }
 
     constructor(public element: HTMLElement, private formatter: Formatter) { }
@@ -45,8 +43,6 @@ export class PhoneNumberDirective {
     @HostListener("input", ["event.target.value"])
     formatPhoneNumber(value: string) {
         this.value = this.formatter.formatNumber(value, 10, 2, this.willHaveSpaces)
-
-        Detector.digest();
     }
 
 }
