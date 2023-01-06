@@ -1,8 +1,8 @@
 export class Formatter {
 
-    constructor(name: string) {
-        console.log('Je suis le formateur = ' + name);
-    }
+    //constructor(name: string) {
+    //console.log('Je suis le formateur = ' + name);
+    //}
 
     formatNumber(
         initialValue: string,
