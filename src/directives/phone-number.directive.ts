@@ -18,6 +18,7 @@ export class PhoneNumberDirective {
     willHaveSpaces = true;
 
     @Input("border-color")
+    @HostBinding('style.border-color')
     borderColor = "red";
 
     @HostBinding("placeholder")
@@ -25,17 +26,14 @@ export class PhoneNumberDirective {
 
     constructor(public element: HTMLElement, private formatter: Formatter) { }
 
-    @HostListener("click", ["event.clientX", 35])
-    onclick(coordX: number, age: number) {
-        console.log(coordX, age);
-    };
+    // @HostListener("click", ["event.clientX", 35])
+    // onclick(coordX: number, age: number) {
+    //     //console.log(coordX, age);
+    // };
 
     @HostListener("input", ["event.target"])
     formatPhoneNumber(element: HTMLInputElement) {
         element.value = this.formatter.formatNumber(element.value, 10, 2, this.willHaveSpaces)
     }
 
-    init() {
-        this.element.style.borderColor = this.borderColor;
-    }
 }
