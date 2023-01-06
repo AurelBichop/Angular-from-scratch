@@ -1,5 +1,6 @@
 import { CreditCardDirective } from "../directives/credit-card.directive";
 import { PhoneNumberDirective } from "../directives/phone-number.directive";
+import { Module, ProvidersMetadata, ServicesInstances } from "./type";
 
 
 export class FrameWork {
@@ -7,14 +8,14 @@ export class FrameWork {
      * Array listing all the directives
     */
     directives: any[] = [];
-    services: { name: string, instance: any }[] = [];
-    providers: { provide: string, construct: Function }[] = [];
+    services: ServicesInstances = [];
+    providers: ProvidersMetadata = [];
 
     /**
      * Processing to instantiate the directive and attach them 
      * to the html elements
      */
-    boostrapApplication(metadata: { providers?: any[], declarations: any[] }) {
+    boostrapApplication(metadata: Module) {
         this.providers = metadata.providers || [];
         this.directives = metadata.declarations;
 

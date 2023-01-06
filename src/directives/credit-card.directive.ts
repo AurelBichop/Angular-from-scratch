@@ -1,14 +1,16 @@
+import { Directive } from "../decorators/directive";
 import { Formatter } from "../services/formatter";
 import { Verifier } from "../services/verifier";
 
+@Directive({
+    selector: "[card-number]",
+})
 export class CreditCardDirective {
-    static selector = "[card-number]";
-
     constructor(
         public element: HTMLElement,
         private formatter: Formatter,
         private verifier: Verifier
-    ) {}
+    ) { }
 
     formatCardNumber(element: HTMLInputElement) {
         element.value = this.formatter.formatNumber(element.value, 16, 4, true)

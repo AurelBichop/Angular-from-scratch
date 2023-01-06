@@ -1,36 +1,41 @@
+import { Directive } from "../decorators/directive";
+import { HostBinding } from "../decorators/host-binding";
+import { HostListener } from "../decorators/host-listener";
+import { Input } from "../decorators/input";
 import { Formatter } from "../services/formatter";
 
-export class PhoneNumberDirective {
-    static selector = "[phone-number]";
-    static provider = [
+@Directive({
+    selector: '[phone-number]',
+    providers: [
         {
             provide: "formatter",
             construct: () => new Formatter("spécifique"),
         }
-    ];
-
+    ]
+})
+export class PhoneNumberDirective {
+    @Input("with-spaces")
     willHaveSpaces = true;
+
+    @Input("border-color")
     borderColor = "red";
+
+    @HostBinding("placeholder")
+    placeholderText = "Hello World";
 
     constructor(public element: HTMLElement, private formatter: Formatter) { }
 
+    @HostListener("click", ["event.clientX", 35])
+    onclick(coordX: number, age: number) {
+        console.log(coordX, age);
+    };
+
+    @HostListener("input", ["event.target"])
     formatPhoneNumber(element: HTMLInputElement) {
         element.value = this.formatter.formatNumber(element.value, 10, 2, this.willHaveSpaces)
     }
 
     init() {
-
-        if (this.element.hasAttribute('with-spaces')) {
-            this.willHaveSpaces = this.element.getAttribute('with-spaces') === "true";
-        }
-        if (this.element.hasAttribute('border-color')) {
-            this.borderColor = this.element.getAttribute('border-color')!;
-        }
-
         this.element.style.borderColor = this.borderColor;
-
-        this.element.addEventListener('input', (event) => {
-            this.formatPhoneNumber(event.target as HTMLInputElement)
-        })
     }
 }
