@@ -48,3 +48,9 @@ export type DirectiveMetadata = {
     providers?: ProvidersMetadata;
 
 }
+
+export type ComponentMetadata = {
+    selector: string;
+    providers?: ProvidersMetadata;
+    template: string;
+}

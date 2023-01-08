@@ -9,7 +9,7 @@ export function Input(attrName: string) {
         const originalInitFunction: Function = decoratedClass["init"] || function () { };
 
         decoratedClass["init"] = function () {
-
+            console.log(this.element);
             if (this.element.hasAttribute(`[${attrName}]`)) {
                 this[propName] = this.element.getAttribute(`[${attrName}]`) === "true";
             }
