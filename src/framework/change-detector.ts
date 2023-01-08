@@ -15,7 +15,7 @@ export class ChangeDetector {
     }
 
     digest() {
-        console.group("Digest !")
+        //console.group("Digest !")
         while (this.bindings.length > 0) {
             const binding = this.bindings.pop();
 
@@ -24,11 +24,11 @@ export class ChangeDetector {
             if (actualValue === binding.value) {
                 continue;
             }
-            
+
             console.log("Mise en place de ", binding.value, " dans l'attribut", binding.attrName, " de l'element ", binding.element);
             set(binding.element, binding.attrName, binding.value);
         }
-        console.groupEnd();
+        //console.groupEnd();
     }
 }
 

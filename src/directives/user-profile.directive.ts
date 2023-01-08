@@ -17,10 +17,23 @@ export class UserProfileDirective {
     job: string;
 
     template = `
-            <h3>{{ firstName }} {{ lastName }}</h3>
+            <h3 (click)="onClickH3">{{ firstName }} {{ lastName }}</h3>
             <strong>Poste : </strong> {{ job }}
-            <button>Changer le prénom</button>
+            <button (click)="onClickButton" (dblclick)="onDblClickButton">Changer le Prénom</button>
         `;
+
+    onClickH3() {
+        console.log("Click sur le H3");
+    }
+
+
+    onDblClickButton() {
+        this.firstName = "ABY";
+    }
+
+    onClickButton() {
+        this.firstName = "Raph";
+    }
 
     constructor(public element: HTMLElement) { }
 
@@ -41,6 +54,38 @@ export class UserProfileDirective {
             renderedTemplate = renderedTemplate.replace(interpolation, this[propName])
         });
 
+        const eventsToBind: {
+            elementId: string,
+            eventName: string,
+            methodName: string,
+        }[] = [];
+
+        this.template.match(/<.*? \(.*?\)=\".*?\".*?>/g).forEach(
+            baliseOuvrante => {
+                const randomId = "event-listener-" + Math.ceil(Math.random() * 1000)
+
+                baliseOuvrante.match(/\(.*?\)=\".*?\"/g).forEach((event) => {
+                    const eventName = event.match(/\(.*?\)/)[0].replace(/\(|\)/g, '');
+                    const methodName = event.match(/\".*?\"/)[0].replace(/\"/g, '');
+
+                    eventsToBind.push({
+                        elementId: randomId,
+                        eventName: eventName,
+                        methodName: methodName,
+                    })
+
+                    const finalBaliseOuvrante = baliseOuvrante.replace(/\(.*?\)=\".*?\"/g, '').replace(/>/g, `id="${randomId}">`)
+                    renderedTemplate = renderedTemplate.replace(baliseOuvrante, finalBaliseOuvrante);
+                });
+            }
+        )
         this.element.innerHTML = renderedTemplate;
+
+        eventsToBind.forEach(eventToBind => {
+            this.element.querySelector('#' + eventToBind.elementId).addEventListener(eventToBind.eventName, () => {
+                this[eventToBind.methodName]();
+                this.render();
+            })
+        })
     }
 }
